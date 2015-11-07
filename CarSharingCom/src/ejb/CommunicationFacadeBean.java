@@ -7,8 +7,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
-import jpa.CarJPA;
-import ejb.UserFacadeRemote;
+import jpa.MessageJPA;
+import jpa.DriverCommentJPA;
+import ejb.CommunicationFacadeRemote;
 
 /**
  * EJB Session Bean Class 
@@ -39,49 +40,65 @@ public class CommunicationFacadeBean implements CommunicationFacadeRemote {
 		
 	    return driverComments;
 	}
+	
 	/**
-	 * Method that adds a car
+	 * Method that adds a question
 	 */
-	public void addCar(String nif, String carRegistrationId, String brand, String model, String color) throws PersistenceException {
+	public void askQuestion(int tripId, int questionId, String driver, String subject, String body) throws PersistenceException {
 
-		CarJPA car = new CarJPA();
-		car.setNif(nif);
-		car.setCarRegistrationId(carRegistrationId);
-		car.setBrand(brand);
-		car.setModel(model);
-		car.setColor(color);
+		MessageJPA message = new MessageJPA();
+		message.setTripId(tripId);
+		message.setQuestionId(questionId);
+		message.setDriver(driver);
+		message.setSubject(subject);
+		message.setBody(body);
 		try
 		{
-			entman.persist(car);
+			entman.persist(message);
 			
 		}catch (PersistenceException e) {
 			System.out.println(e);
 		} 
 	}	
 	  
-	
-	
-	  
 	/**
-	 * Method that delete a instance of the class car
+	 * Method that replies a question
 	 */
-	public void deleteCar(String carRegistrationId)throws PersistenceException {
+	public void replyQuestion(int tripId, int questionId, String driver, String subject, String body) throws PersistenceException {
+
+		MessageJPA message = new MessageJPA();
+		message.setTripId(tripId);
+		message.setQuestionId(questionId);
+		message.setDriver(driver);
+		message.setSubject(subject);
+		message.setBody(body);
 		try
 		{
-			entman.createQuery("DELETE FROM CarJPA b WHERE b.carRegistrationId = ?1").setParameter(1, carRegistrationId).executeUpdate();
+			entman.persist(message);
 			
 		}catch (PersistenceException e) {
 			System.out.println(e);
 		} 
 	}	
 	
+		  
 	/**
-	 * Method that verify the existences of as car
+	 * Method that rate a driver
 	 */
-	public boolean existsCar(String carRegistrationId)throws PersistenceException {
-		@SuppressWarnings("unchecked")
-		Collection<CarJPA> cars = entman.createQuery("FROM CarJPA b WHERE b.carRegistrationId = ?1").setParameter(1, carRegistrationId).getResultList();
-		if (cars.isEmpty()) return false; 
-		else return true;
+	public void rateDriver(String driver, String passenger, String comment, int rate)throws PersistenceException {
+		DriverCommentJPA driverComment = new DriverCommentJPA();
+		driverComment.setDriver(driver);
+		driverComment.setPassenger(passenger);
+		driverComment.setComment(comment);
+		driverComment.setRate(rate);
+		try
+		{
+			entman.persist(driverComment);
+			
+		}catch (PersistenceException e) {
+			System.out.println(e);
+		} 
+		
 	}	
+	
 }
